@@ -1,4 +1,4 @@
-package com.mayilyan.ipgeoinfo.client;
+package com.mayilyan.ipgeoinfo.provider;
 
 import com.mayilyan.ipgeoinfo.model.IPInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +8,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 
 @Slf4j
 @Component
-public class FreeIpApiClient {
+public class FreeIpApiClient implements IPInfoProvider {
 
     private final WebClient webClient = WebClient.builder()
             .baseUrl("https://free.freeipapi.com")
@@ -16,7 +16,7 @@ public class FreeIpApiClient {
             .defaultHeader("Accept", "application/json")
             .build();
 
-
+    @Override
     public IPInfo getIPInfo(String ipAddress) {
         try {
             IPInfo response = webClient.get()
@@ -26,15 +26,18 @@ public class FreeIpApiClient {
                     .block();
 
             if (response == null) {
-                throw new RuntimeException("No response received from freeipapi.co");
+                throw new RuntimeException("No response received from freeipapi.com");
             }
 
             return response;
         } catch (WebClientResponseException.BadRequest e) {
             throw new IllegalArgumentException("Invalid IP address");
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to fetch IP information");
         }
+    }
+
+    @Override
+    public String getName() {
+        return "FreeIPAPI";
     }
 
 }
