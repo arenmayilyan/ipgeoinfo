@@ -18,6 +18,14 @@ public class RateLimiterScheduler {
     private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
     private final Map<String, IPInfoProvider> providerMap;
 
+    Map<String, BlockingQueue<RateLimitedRequest>> getQueues() {
+        return this.queues;
+    }
+
+    Map<String, IPInfoProvider> getProviderMap() {
+        return this.providerMap;
+    }
+
     public RateLimiterScheduler(List<IPInfoProvider> providers) {
         providerMap = new HashMap<>();
         for (IPInfoProvider p : providers) {
@@ -33,7 +41,7 @@ public class RateLimiterScheduler {
         }
     }
 
-    private void processNext(String providerName) {
+    void processNext(String providerName) {
         try {
             BlockingQueue<RateLimitedRequest> queue = queues.get(providerName);
             RateLimitedRequest task = queue.poll();

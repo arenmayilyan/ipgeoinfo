@@ -21,7 +21,7 @@ public class GeoInfoServiceImpl implements GeoInfoService {
     private final List<IPInfoProvider> providers;
     private final RateLimiterScheduler rateLimiter;
 
-//    @Cacheable(value = "ipInfoCache", key = "#ip + '_' + #providerName")
+    @Cacheable(value = "ipInfoCache", key = "#ip + '_' + #providerName")
     public IPInfo getGeoInfo(String ip, String providerName) {
 
         log.info("Looking up IP: {} using provider: {}", ip, providerName);
@@ -37,6 +37,9 @@ public class GeoInfoServiceImpl implements GeoInfoService {
         IPInfo info = null;
         try {
             info = future.get();
+            if (info == null) {
+                throw new RuntimeException("No response received from " + providerName);
+            }
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException("No response received from " + providerName);
         }
