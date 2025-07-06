@@ -31,7 +31,6 @@ public class RateLimiterSchedulerTest {
             }
         };
 
-        // Override the internal queue and provider map
         scheduler.getQueues().put("TestProvider", new LinkedBlockingQueue<>(1));
         scheduler.getProviderMap().put("TestProvider", mockProvider);
     }
@@ -45,15 +44,13 @@ public class RateLimiterSchedulerTest {
     void shouldEnqueueRequestSuccessfullyWhenQueueNotFull() {
         CompletableFuture<IPInfo> future = scheduler.enqueueRequest("1.1.1.1", "TestProvider");
         assertNotNull(future);
-        assertFalse(future.isDone()); // It will be processed later by processNext()
+        assertFalse(future.isDone());
     }
 
     @Test
     void shouldThrowRateLimitExceededExceptionWhenQueueIsFull() {
-        // Fill the queue with one request
         scheduler.enqueueRequest("1.1.1.1", "TestProvider");
 
-        // Try to enqueue another — should throw
         assertThrows(RateLimitExceededException.class, () ->
                 scheduler.enqueueRequest("1.1.1.2", "TestProvider"));
     }
@@ -66,7 +63,6 @@ public class RateLimiterSchedulerTest {
         mockResponse.setIpAddress("1.1.1.1");
         when(mockProvider.getIPInfo("1.1.1.1")).thenReturn(mockResponse);
 
-        // Manually call processNext
         scheduler.processNext("TestProvider");
 
         assertTrue(future.isDone());

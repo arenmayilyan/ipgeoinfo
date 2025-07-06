@@ -30,7 +30,7 @@ public class RateLimiterScheduler {
         providerMap = new HashMap<>();
         for (IPInfoProvider p : providers) {
             providerMap.put(p.getName(), p);
-            queues.put(p.getName(), new LinkedBlockingQueue<>());
+            queues.put(p.getName(), new LinkedBlockingQueue<>(1));
         }
     }
 

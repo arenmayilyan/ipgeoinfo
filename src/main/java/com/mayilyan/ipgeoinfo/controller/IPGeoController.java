@@ -4,16 +4,12 @@ import com.mayilyan.ipgeoinfo.exception.InvalidIpException;
 import com.mayilyan.ipgeoinfo.model.IPInfo;
 import com.mayilyan.ipgeoinfo.service.GeoInfoService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
-import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.*;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/api/ip")
@@ -80,7 +76,7 @@ public class IPGeoController {
                             examples = @ExampleObject(value = """
                 {
                   "error": "Server error",
-                  "details": "No response received from FreeIPAPI"
+                  "details": "No response received from API"
                 }
             """)
                     )
@@ -90,9 +86,6 @@ public class IPGeoController {
     public ResponseEntity<?> getGeoInfo(@PathVariable String ipAddress,
                                         @RequestParam(defaultValue = "FreeIPAPI") String provider) {
 
-            if (!ipAddress.matches("^((25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)\\.){3}(25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)$")) {
-                throw new InvalidIpException("Invalid IPv4 address format");
-            }
             IPInfo info = geoInfoService.getGeoInfo(ipAddress, provider);
             return ResponseEntity.ok(info);
     }
